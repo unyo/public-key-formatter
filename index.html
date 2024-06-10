@@ -38,7 +38,7 @@
     <script>
         function formatPublicKey() {
             const input = document.getElementById('publicKey').value;
-            const formatted = input.replace(/(-----BEGIN PGP PUBLIC KEY-----)([\s\S]*)(-----END PGP PUBLIC KEY-----)/, (match, p1, p2, p3) => {
+            const formatted = input.replace(/(-----BEGIN PGP PUBLIC KEY BLOCK-----)([\s\S]*)(-----END PGP PUBLIC KEY BLOCK-----)/, (match, p1, p2, p3) => {
                 return p1 + '\n' + p2.trim().replace(/\s+/g, '\n') + '\n' + p3;
             });
             document.getElementById('formattedKey').value = formatted;
