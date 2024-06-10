@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Key Formatter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Public Key Formatter</h1>
+    <label for="publicKey">Enter your public key:</label>
+    <textarea id="publicKey" placeholder="Paste your public key here..."></textarea>
+    <button onclick="formatPublicKey()">Format Public Key</button>
+    <h2>Formatted Public Key:</h2>
+    <textarea id="formattedKey" readonly placeholder="Formatted key will appear here..."></textarea>
+
+    <script>
+        function formatPublicKey() {
+            const input = document.getElementById('publicKey').value;
+            const formatted = input.replace(/(-----BEGIN PUBLIC KEY-----)([\s\S]*)(-----END PUBLIC KEY-----)/, (match, p1, p2, p3) => {
+                return p1 + '\n' + p2.trim().replace(/\s+/g, '\n') + '\n' + p3;
+            });
+            document.getElementById('formattedKey').value = formatted;
+        }
+    </script>
+</body>
+</html>
