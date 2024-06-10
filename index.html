@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Public Key Formatter</title>
+    <title>Public Key Formatter and Encryptor</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -19,14 +19,21 @@
             font-size: 16px;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/openpgp/5.0.0-4/openpgp.min.js"></script>
 </head>
 <body>
-    <h1>Public Key Formatter</h1>
+    <h1>Public Key Formatter and Encryptor</h1>
     <label for="publicKey">Enter your public key:</label>
     <textarea id="publicKey" placeholder="Paste your public key here..."></textarea>
     <button onclick="formatPublicKey()">Format Public Key</button>
     <h2>Formatted Public Key:</h2>
     <textarea id="formattedKey" readonly placeholder="Formatted key will appear here..."></textarea>
+
+    <h2>Message to Encrypt:</h2>
+    <textarea id="message" placeholder="Enter the message you want to encrypt..."></textarea>
+    <button onclick="encryptMessage()">Encrypt Message</button>
+    <h2>Encrypted Message:</h2>
+    <textarea id="encryptedMessage" readonly placeholder="Encrypted message will appear here..."></textarea>
 
     <script>
         function formatPublicKey() {
@@ -35,6 +42,24 @@
                 return p1 + '\n' + p2.trim().replace(/\s+/g, '\n') + '\n' + p3;
             });
             document.getElementById('formattedKey').value = formatted;
+        }
+
+        async function encryptMessage() {
+            const publicKeyArmored = document.getElementById('formattedKey').value;
+            const message = document.getElementById('message').value;
+
+            if (!publicKeyArmored || !message) {
+                alert("Please provide both a formatted public key and a message to encrypt.");
+                return;
+            }
+
+            const publicKey = await openpgp.readKey({ armoredKey: publicKeyArmored });
+            const encrypted = await openpgp.encrypt({
+                message: await openpgp.createMessage({ text: message }),
+                encryptionKeys: publicKey
+            });
+
+            document.getElementById('encryptedMessage').value = encrypted;
         }
     </script>
 </body>
