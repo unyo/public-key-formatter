@@ -22,7 +22,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/openpgp/5.0.0-4/openpgp.min.js"></script>
 </head>
 <body>
-    <h1>Public Key Formatter and Encryptor</h1>
+    <h1>iOS Public Key Formatter and Encryptor</h1>
     <label for="publicKey">Enter your public key:</label>
     <textarea id="publicKey" placeholder="Paste your public key here..."></textarea>
     <button onclick="formatPublicKey()">Format Public Key</button>
@@ -39,7 +39,7 @@
         function formatPublicKey() {
             const input = document.getElementById('publicKey').value;
             const formatted = input.replace(/(-----BEGIN PGP PUBLIC KEY BLOCK-----)([\s\S]*)(-----END PGP PUBLIC KEY BLOCK-----)/, (match, p1, p2, p3) => {
-                return p1 + '\n' + p2.trim().replace(/\s+/g, '\n') + '\n' + p3;
+                return p1 + '\r\n' + p2.trim().replace(/\s+/g, '\r\n') + '\r\n' + p3;
             });
             document.getElementById('formattedKey').value = formatted;
         }
