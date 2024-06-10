@@ -22,44 +22,82 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/openpgp/5.0.0-4/openpgp.min.js"></script>
 </head>
 <body>
-    <h1>iOS Public Key Formatter and Encryptor</h1>
+    <h1>Public Key Formatter and Encryptor</h1>
     <label for="publicKey">Enter your public key:</label>
     <textarea id="publicKey" placeholder="Paste your public key here..."></textarea>
     <button onclick="formatPublicKey()">Format Public Key</button>
+    <button onclick="copyToClipboard('publicKey')">Copy</button>
+    <button onclick="clearTextarea('publicKey')">Clear</button>
     <h2>Formatted Public Key:</h2>
     <textarea id="formattedKey" readonly placeholder="Formatted key will appear here..."></textarea>
+    <button onclick="copyToClipboard('formattedKey')">Copy</button>
+    <button onclick="clearTextarea('formattedKey')">Clear</button>
 
     <h2>Message to Encrypt:</h2>
     <textarea id="message" placeholder="Enter the message you want to encrypt..."></textarea>
     <button onclick="encryptMessage()">Encrypt Message</button>
+    <button onclick="copyToClipboard('message')">Copy</button>
+    <button onclick="clearTextarea('message')">Clear</button>
     <h2>Encrypted Message:</h2>
     <textarea id="encryptedMessage" readonly placeholder="Encrypted message will appear here..."></textarea>
+    <button onclick="copyToClipboard('encryptedMessage')">Copy</button>
+    <button onclick="clearTextarea('encryptedMessage')">Clear</button>
+
+    <div id="error" style="color: red;"></div>
 
     <script>
         function formatPublicKey() {
-            const input = document.getElementById('publicKey').value;
-            const formatted = input.replace(/(-----BEGIN PGP PUBLIC KEY BLOCK-----)([\s\S]*)(-----END PGP PUBLIC KEY BLOCK-----)/, (match, p1, p2, p3) => {
-                return p1 + '\r\n\r\n' + p2.trim().replace(/\s+/g, '\r\n') + '\r\n' + p3;
-            });
-            document.getElementById('formattedKey').value = formatted;
+            try {
+                const input = document.getElementById('publicKey').value;
+                const formatted = input.replace(/(-----BEGIN PGP PUBLIC KEY BLOCK-----)([\s\S]*)(-----END PGP PUBLIC KEY BLOCK-----)/, (match, p1, p2, p3) => {
+                    return p1 + '\r\n\r\n' + p2.trim().replace(/\s+/g, '\r\n') + '\r\n' + p3;
+                });
+                document.getElementById('formattedKey').value = formatted;
+                clearError();
+            } catch (error) {
+                showError("Error formatting public key: " + error.message);
+            }
         }
 
         async function encryptMessage() {
-            const publicKeyArmored = document.getElementById('formattedKey').value;
-            const message = document.getElementById('message').value;
+            try {
+                const publicKeyArmored = document.getElementById('formattedKey').value;
+                const message = document.getElementById('message').value;
 
-            if (!publicKeyArmored || !message) {
-                alert("Please provide both a formatted public key and a message to encrypt.");
-                return;
+                if (!publicKeyArmored || !message) {
+                    showError("Please provide both a formatted public key and a message to encrypt.");
+                    return;
+                }
+
+                const publicKey = await openpgp.readKey({ armoredKey: publicKeyArmored });
+                const encrypted = await openpgp.encrypt({
+                    message: await openpgp.createMessage({ text: message }),
+                    encryptionKeys: publicKey
+                });
+
+                document.getElementById('encryptedMessage').value = encrypted;
+                clearError();
+            } catch (error) {
+                showError("Error encrypting message: " + error.message);
             }
+        }
 
-            const publicKey = await openpgp.readKey({ armoredKey: publicKeyArmored });
-            const encrypted = await openpgp.encrypt({
-                message: await openpgp.createMessage({ text: message }),
-                encryptionKeys: publicKey
-            });
+        function copyToClipboard(elementId) {
+            const textarea = document.getElementById(elementId);
+            textarea.select();
+            document.execCommand('copy');
+        }
 
-            document.getElementById('encryptedMessage').value = encrypted;
+        function clearTextarea(elementId) {
+            document.getElementById(elementId).value = '';
+        }
+
+        function showError(message) {
+            document.getElementById('error').innerText = message;
+        }
+
+        function clearError() {
+            document.getElementById('error').innerText = '';
         }
     </script>
 </body>
