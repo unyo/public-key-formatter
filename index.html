@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Public Key Formatter and Encryptor</title>
+    <title>PGP Public Key/Message Formatter and Encryptor</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,13 +22,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/openpgp/5.0.0-4/openpgp.min.js"></script>
 </head>
 <body>
-    <h1>Public Key Formatter and Encryptor</h1>
-    <label for="publicKey">Enter your public key:</label>
+    <h1>PGP Public Key/Message Formatter and Encryptor for iOS Firefox</h1>
+    <label for="publicKey">Enter your public key/message:</label>
     <textarea id="publicKey" placeholder="Paste your public key here..."></textarea>
-    <button onclick="formatPublicKey()">Format Public Key</button>
+    <button onclick="formatPublicKey()">Format Public Key/Message</button>
     <button onclick="copyToClipboard('publicKey')">Copy</button>
     <button onclick="clearTextarea('publicKey')">Clear</button>
-    <h2>Formatted Public Key:</h2>
+    <h2>Formatted Public Key/Message:</h2>
     <textarea id="formattedKey" readonly placeholder="Formatted key will appear here..."></textarea>
     <button onclick="copyToClipboard('formattedKey')">Copy</button>
     <button onclick="clearTextarea('formattedKey')">Clear</button>
