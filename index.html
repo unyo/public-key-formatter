@@ -49,7 +49,7 @@
         function formatPublicKey() {
             try {
                 const input = document.getElementById('publicKey').value;
-                const formatted = input.replace(/(-----\w+-----)([\s\S]*)(-----\w+-----)/, (match, p1, p2, p3) => {
+                const formatted = input.replace(/(\-\-\-\-\-[^\-]+?\-\-\-\-\-)([\s\S]*)(\-\-\-\-\-[^\-]+?\-\-\-\-\-)/, (match, p1, p2, p3) => {
                     return p1 + '\r\n\r\n' + p2.trim().replace(/\s+/g, '\r\n') + '\r\n' + p3;
                 });
                 document.getElementById('formattedKey').value = formatted;
