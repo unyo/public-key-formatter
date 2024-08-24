@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PGP Public Key/Message Formatter and Encryptor</title>
+    <title>PGP Public Key/Message Formatter, Encryptor, and Decryptor</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,7 +22,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/openpgp/5.0.0-4/openpgp.min.js"></script>
 </head>
 <body>
-    <h1>PGP Public Key/Message Formatter and Encryptor</h1>
+    <h1>PGP Public Key/Message Formatter, Encryptor, and Decryptor</h1>
     <label for="publicKey">Enter your public key/message:</label>
     <textarea id="publicKey" placeholder="Paste your public key here..."></textarea>
     <button onclick="formatPublicKey()">Format Public Key/Message</button>
@@ -42,6 +42,23 @@
     <textarea id="encryptedMessage" readonly placeholder="Encrypted message will appear here..."></textarea>
     <button onclick="copyToClipboard('encryptedMessage')">Copy</button>
     <button onclick="clearTextarea('encryptedMessage')">Clear</button>
+
+    <h2>Private Key for Decryption:</h2>
+    <textarea id="privateKey" placeholder="Paste your private key here..."></textarea>
+    <button onclick="clearTextarea('privateKey')">Clear</button>
+
+    <h2>Passphrase for Private Key:</h2>
+    <input type="password" id="passphrase" placeholder="Enter your passphrase here..." style="width:100%; padding:10px;">
+
+    <h2>Encrypted Message to Decrypt:</h2>
+    <textarea id="encryptedToDecrypt" placeholder="Paste the encrypted message here..."></textarea>
+    <button onclick="clearTextarea('encryptedToDecrypt')">Clear</button>
+
+    <button onclick="decryptMessage()">Decrypt Message</button>
+    <h2>Decrypted Message:</h2>
+    <textarea id="decryptedMessage" readonly placeholder="Decrypted message will appear here..."></textarea>
+    <button onclick="copyToClipboard('decryptedMessage')">Copy</button>
+    <button onclick="clearTextarea('decryptedMessage')">Clear</button>
 
     <div id="error" style="color: red;"></div>
 
@@ -79,6 +96,34 @@
                 clearError();
             } catch (error) {
                 showError("Error encrypting message: " + error.message);
+            }
+        }
+
+        async function decryptMessage() {
+            try {
+                const privateKeyArmored = document.getElementById('privateKey').value;
+                const passphrase = document.getElementById('passphrase').value;
+                const encryptedMessage = document.getElementById('encryptedToDecrypt').value;
+
+                if (!privateKeyArmored || !passphrase || !encryptedMessage) {
+                    showError("Please provide the private key, passphrase, and encrypted message to decrypt.");
+                    return;
+                }
+
+                const privateKey = await openpgp.decryptKey({
+                    privateKey: await openpgp.readPrivateKey({ armoredKey: privateKeyArmored }),
+                    passphrase
+                });
+
+                const decrypted = await openpgp.decrypt({
+                    message: await openpgp.readMessage({ armoredMessage: encryptedMessage }),
+                    decryptionKeys: privateKey
+                });
+
+                document.getElementById('decryptedMessage').value = decrypted.data;
+                clearError();
+            } catch (error) {
+                showError("Error decrypting message: " + error.message);
             }
         }
 
