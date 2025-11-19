@@ -66,16 +66,26 @@
         function formatPublicKey() {
             try {
                 const input = document.getElementById('publicKey').value;
-                const formatted = input.replace(/(\-\-\-\-\-[^\-]+?\-\-\-\-\-)([\s\S]*)(\-\-\-\-\-[^\-]+?\-\-\-\-\-)/, (match, p1, p2, p3) => {
-                    return p1 + '\r\n\r\n' + p2.trim().replace(/\s+/g, '\r\n') + '\r\n' + p3;
-                });
+        
+                // Fix ONLY newline issues, leave tabs alone
+                const formatted = input.replace(
+                    /(\-\-\-\-\-[^\-]+?\-\-\-\-\-)([\s\S]*?)(\-\-\-\-\-[^\-]+?\-\-\-\-\-)/,
+                    (match, p1, p2, p3) => {
+                        // Normalize only newlines inside block, keep tabs untouched
+                        const inner = p2
+                            .trim()
+                            .replace(/\r?\n+/g, "\r\n"); // ✨ Only modify newlines
+        
+                        return p1 + "\r\n\r\n" + inner + "\r\n" + p3;
+                    }
+                );
+        
                 document.getElementById('formattedKey').value = formatted;
                 clearError();
             } catch (error) {
                 showError("Error formatting public key: " + error.message);
             }
         }
-
         async function encryptMessage() {
             try {
                 const publicKeyArmored = document.getElementById('formattedKey').value;
