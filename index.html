@@ -67,16 +67,14 @@
             try {
                 const input = document.getElementById('publicKey').value;
         
-                // Fix ONLY newline issues, leave tabs alone
                 const formatted = input.replace(
                     /(\-\-\-\-\-[^\-]+?\-\-\-\-\-)([\s\S]*?)(\-\-\-\-\-[^\-]+?\-\-\-\-\-)/,
                     (match, p1, p2, p3) => {
-                        // Normalize only newlines inside block, keep tabs untouched
-                        const inner = p2
-                            .trim()
-                            .replace(/\r?\n+/g, "\r\n"); // ✨ Only modify newlines
+                        // Normalize ONLY newline characters, do not trim or collapse
+                        const inner = p2.replace(/\r?\n/g, "\r\n");
         
-                        return p1 + "\r\n\r\n" + inner + "\r\n" + p3;
+                        // Return header + untouched spacing (with normalized CRLFs)
+                        return p1 + "\r\n" + inner + "\r\n" + p3;
                     }
                 );
         
